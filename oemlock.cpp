@@ -4,6 +4,7 @@
 #include <OemLockClient.h>
 #include <android/hardware/oemlock/1.0/IOemLock.h>
 #include <sysexits.h>
+#include "version.h"
 
 using android::sp;
 
@@ -17,7 +18,7 @@ static void usage(FILE* where, int /* argc */, char* argv[]) {
             "%s - command-line wrapper for the oemlock HAL.\n"
             "\n"
             "Usage:\n"
-            "  %s COMMAND\n"
+            "  %s [-v|--version] [COMMAND]\n"
             "\n"
             "Commands:\n"
             "  hal-info                         - Show info about oemlock HAL used.\n"
@@ -63,6 +64,11 @@ static int do_is_oem_unlock_allowed_by_device(OemLockClient* module) {
     return handle_return(ret, "Error calling isOemUnlockAllowedByDevice()\n");
 }
 
+static int do_version() {
+    fprintf(stdout, "OemLock: %s\n", version);
+    return EX_OK;
+}
+
 int main(int argc, char* argv[]) {
     const auto client = android::hal::OemLockClient::WaitForService();
     if (client == nullptr) {
@@ -70,7 +76,7 @@ int main(int argc, char* argv[]) {
         return EX_SOFTWARE;
     }
 
-    if (argc < 2) {
+    if (argc != 2) {
         usage(stderr, argc, argv);
         return EX_USAGE;
     }
@@ -81,6 +87,8 @@ int main(int argc, char* argv[]) {
         return do_is_oem_unlock_allowed_by_carrier(client.get());
     } else if (strcmp(argv[1], "is-oem-unlock-allowed-by-device") == 0) {
         return do_is_oem_unlock_allowed_by_device(client.get());
+    } else if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+        return do_version();
     }
 
     // Parameter not matched, print usage
