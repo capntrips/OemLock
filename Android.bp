@@ -1,0 +1,39 @@
+cc_binary {
+    name: "oemlock",
+    srcs: ["oemlock.cpp"],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+    static_libs: [
+        "android.hardware.oemlock@1.0",
+        "android.hardware.oemlock-V1-ndk",
+        "liboem_lock_client"
+    ],
+    shared_libs: [
+        "libbinder_ndk",
+        "liblog",
+        "libbase",
+        "libcutils",
+        "libhidlbase",
+        "libutils",
+    ],
+}
+
+cc_library {
+    name: "liboem_lock_client",
+    srcs: [
+        "OemLockClient.cpp"
+    ],
+    export_include_dirs: ["include"],
+    export_shared_lib_headers: ["android.hardware.oemlock-V1-ndk"],
+    shared_libs: [
+        "android.hardware.oemlock-V1-ndk",
+        "android.hardware.oemlock@1.0",
+        "libhidlbase",
+        "libbinder_ndk",
+        "libbase",
+        "libcutils",
+        "libutils",
+    ],
+}
